@@ -1,4 +1,4 @@
-import java.io.BufferedReader;
+import java.io.BufferedReader ;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,14 +25,14 @@ import org.json.JSONObject;
 public class zapTryAgain {
 	public static NavigableMap<Double,ArrayList<ArrayList<Product>>> m=new TreeMap<Double,ArrayList<ArrayList<Product>>>();
 	public static ArrayList<Product> data=new ArrayList<Product>();
-	static int n=0; //number of gifts
-	static double money=0; //approx amount user wants to spend
-	static int pageCount=1; //to keep track of the page number
-	static ArrayList<Double> prices=new ArrayList<Double>();  //prices
-	static ArrayList<Integer> pids=new ArrayList<Integer>();  //product ids
-	static ArrayList<Integer> sids=new ArrayList<Integer>();  //style ids
-	static ArrayList<String> urls=new ArrayList<String>();    //urls
-	static ArrayList<String> pnames=new ArrayList<String>();  //product names
+	static int n=0;
+	static double money=0;
+	static int pageCount=1; 
+	static ArrayList<Double> prices=new ArrayList<Double>();
+	static ArrayList<Integer> pids=new ArrayList<Integer>();
+	static ArrayList<Integer> sids=new ArrayList<Integer>();
+	static ArrayList<String> urls=new ArrayList<String>();
+	static ArrayList<String> pnames=new ArrayList<String>();
 	
 	static Properties prop = new Properties();
 	static InputStream input = null;
@@ -45,10 +45,7 @@ public class zapTryAgain {
 	
 // check if any arguments are given
 if (inargs.length !=2) {
-//	printHelp();
-	System.out.println("Please give 2 arguments: ");
-	System.out.println("1st arg - Number of gifts you want to select");
-	System.out.println("2nd arg - The approximate amount you want to spend in dollar (just the figure");
+	printHelp();
 	System.exit(0);
 } else {
 	n=Integer.parseInt(inargs[0]);
@@ -62,17 +59,27 @@ while(continueRetrieving){
 }
 
 processAllRecords();
+
+prices.removeAll(prices);
+//System.out.println(prices.size());
+urls.removeAll(urls);
+sids.removeAll(sids);
+pnames.removeAll(pnames);
+pids.removeAll(pids);
+System.gc();
 //System.out.println(data.size());
 /*for(Product p: data){
 	System.out.println(p.styleId+" "+p.ProductId+" "+p.Price+" "+p.prodName+" "+p.purl);
 }*/
+System.gc();
 if(data.size()>=n){
+	
 	int[] indices;
 	CombinationGenerator x = new CombinationGenerator (data.size(), n);
 	//StringBuffer combination;  
 	//ArrayList<ArrayList<Product>> combinationsAll=new ArrayList<ArrayList<Product>>();
 	while (x.hasMore ()) {
-
+    
 	ArrayList<Product> combination=new ArrayList<Product>();
 	Double sum=0.0; int count=0;
 	indices = x.getNext ();
@@ -85,7 +92,7 @@ if(data.size()>=n){
 		  
 	//  }    
 	}
-	if(count==n) {    //inserting into navigablemap if sum of prices of the combination of gifts is not already present
+	if(count==n) {
 	  if(m.containsKey(sum))
 	  m.get(sum).add(combination);
 	  else{
@@ -98,7 +105,10 @@ if(data.size()>=n){
     //combinationsAll.add(combination);
 
 }
-
+	
+//free memory of data arraylist
+	data.removeAll(data);
+	System.gc();
 if(m.containsKey(money)){
 	//while(m.get(money)!=null){
 		for(ArrayList<Product> ap: m.get(money)){
@@ -193,7 +203,7 @@ else{
 	
 	}
 
-//accumulating records from all pages
+
 private static void processAllRecords() {
 	for (int i = 0; i < prices.size(); i++){
 		data.add(new Product(pids.get(i),prices.get(i),sids.get(i),urls.get(i),pnames.get(i)));
@@ -209,7 +219,7 @@ public static boolean retrievePrices() {
 	
 try {
 	//System.out.println(pageCount);
-	if(pageCount<=Integer.parseInt(prop.getProperty("maxNumberOfPages"))){
+
 	URL url = new URL(
 		//	"http://api.zappos.com/Search?key=67d92579a32ecef2694b74abfc00e0f26b10d623");
 			"http://api.zappos.com/Search?sort={%22price%22:%22asc%22}&limit=100&page="+pageCount+"&key=67d92579a32ecef2694b74abfc00e0f26b10d623");
@@ -241,12 +251,15 @@ try {
 	}
 	
 	boolean continueIfPriceOnPageLess=priceJSONParse(JSONstring);
-	if(!continueIfPriceOnPageLess){return false;}
+	
+	if((!continueIfPriceOnPageLess && "".equals(prop.getProperty("maxNumberOfPages"))) || 
+			(!"".equals(prop.getProperty("maxNumberOfPages")) && pageCount>Integer.parseInt(prop.getProperty("maxNumberOfPages")))){
+		return false;
+		}
 	
 	return true;
 //	return prices;
-	}
-return false;
+	
 } catch (MalformedURLException e) {
 	e.printStackTrace();
 	System.out.println("MalformedURLException");
@@ -292,7 +305,8 @@ try {
 	
 	//	data.add(new Product(tempPId,tempPrice,tempSId));
 	}
-	if(prices.get(JSONprices.length()-1)>money){
+	Double compareLastOnPage = prices.get((JSONprices.length()*(pageCount-1))-1);
+	if(compareLastOnPage > money){
 		return false;
 	}
 	
@@ -303,6 +317,7 @@ try {
 } catch (JSONException e) {
 	// this might mean that the API sent us a malformed JSON object and that is bad!
 	e.printStackTrace();
+	return false;
 }
 
 return true;
@@ -316,7 +331,7 @@ return true;
 public static void printHelp() {
 	System.out.println(" Usage: zapTryAgain [number of gifts] [approx amount in dollars you want to spend");
 	System.out.println(" Note: Please do not append $ with the amount");
-
+	
 }
 
 }
