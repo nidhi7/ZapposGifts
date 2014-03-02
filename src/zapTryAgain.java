@@ -25,14 +25,14 @@ import org.json.JSONObject;
 public class zapTryAgain {
 	public static NavigableMap<Double,ArrayList<ArrayList<Product>>> m=new TreeMap<Double,ArrayList<ArrayList<Product>>>();
 	public static ArrayList<Product> data=new ArrayList<Product>();
-	static int n=0;
-	static double money=0;
-	static int pageCount=1; 
-	static ArrayList<Double> prices=new ArrayList<Double>();
-	static ArrayList<Integer> pids=new ArrayList<Integer>();
-	static ArrayList<Integer> sids=new ArrayList<Integer>();
-	static ArrayList<String> urls=new ArrayList<String>();
-	static ArrayList<String> pnames=new ArrayList<String>();
+	static int n=0; //number of gifts
+	static double money=0; //approx amount user wants to spend
+	static int pageCount=1; //to keep track of the page number
+	static ArrayList<Double> prices=new ArrayList<Double>();  //prices
+	static ArrayList<Integer> pids=new ArrayList<Integer>();  //product ids
+	static ArrayList<Integer> sids=new ArrayList<Integer>();  //style ids
+	static ArrayList<String> urls=new ArrayList<String>();    //urls
+	static ArrayList<String> pnames=new ArrayList<String>();  //product names
 	
 	static Properties prop = new Properties();
 	static InputStream input = null;
@@ -45,7 +45,10 @@ public class zapTryAgain {
 	
 // check if any arguments are given
 if (inargs.length !=2) {
-	printHelp();
+//	printHelp();
+	System.out.println("Please give 2 arguments: ");
+	System.out.println("1st arg - Number of gifts you want to select");
+	System.out.println("2nd arg - The approximate amount you want to spend in dollar (just the figure");
 	System.exit(0);
 } else {
 	n=Integer.parseInt(inargs[0]);
@@ -82,7 +85,7 @@ if(data.size()>=n){
 		  
 	//  }    
 	}
-	if(count==n) {
+	if(count==n) {    //inserting into navigablemap if sum of prices of the combination of gifts is not already present
 	  if(m.containsKey(sum))
 	  m.get(sum).add(combination);
 	  else{
@@ -190,7 +193,7 @@ else{
 	
 	}
 
-
+//accumulating records from all pages
 private static void processAllRecords() {
 	for (int i = 0; i < prices.size(); i++){
 		data.add(new Product(pids.get(i),prices.get(i),sids.get(i),urls.get(i),pnames.get(i)));
@@ -311,11 +314,9 @@ return true;
  * Print help for the CLI
  */
 public static void printHelp() {
-	System.out.println(" Usage: getpic [-v] [FILE]...");
-	System.out.println(" Download default image for product SKU numbers contained in FILE.");
-	System.out.println(" There must be one product per line");
-	System.out.println();
-	System.out.println(" -v, --verbose		verbose output");
+	System.out.println(" Usage: zapTryAgain [number of gifts] [approx amount in dollars you want to spend");
+	System.out.println(" Note: Please do not append $ with the amount");
+
 }
 
 }
