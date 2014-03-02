@@ -16,6 +16,8 @@ The API is called to get either
  
 
 "maxNumberOfPages" is an attribute that you can specify in the config.txt file. 
-Ideally the first approach should be used (without the maxNumberofPages)
-Explicitly keeping a check on the number of pages is only for testing purposes.
+
+Explicitly keeping a check on the number of pages is for testing purposes.
 (Eg. Specify maxNumberOfPages=2 and amount user wants to spend = 10)
+
+Ideally the first approach should be used (without the maxNumberofPages) in real world
