@@ -275,15 +275,12 @@ try {
 }
 
 /**
-* Given a JSON object of the response after searching a product, return a list with the 
-* default images of the products in the response.
-* @param ImageJSON
-* @return
+* Parse the JSON response
 */
-public static boolean priceJSONParse(String ImageJSON) {
+public static boolean priceJSONParse(String dataJSON) {
 JSONObject JSONresponse;
 try {
-	JSONresponse = new JSONObject(ImageJSON);
+	JSONresponse = new JSONObject(dataJSON);
 	JSONArray JSONprices = JSONresponse.getJSONArray("results");
 	//Double[] prices = new Double[JSONprices.length()];
 	//Integer[] pids=new Integer[JSONprices.length()];
